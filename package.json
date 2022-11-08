@@ -1,0 +1,23 @@
+{
+  "name": "typescript-module-template",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+
+  "version": "1.0.0",
+
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/mocha": "latest",
+    "assert": "latest",
+    "mocha": "latest",
+    "typescript": "latest"
+  }
+}

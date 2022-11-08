@@ -1,0 +1,36 @@
+on:
+  push:
+    branches:
+      - master
+      - main
+      - develop
+      - dev
+  release:
+    types:
+      - created
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # extract `engines.node` from package.json and save it to output
+      - name: Get Node.JS version from package.json
+        id: get-versions
+        run: echo ::set-output name=node::$(jq -r '.engines.node // "lts/*"' ./package.json)
+
+      - name: Setup Node.JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{steps.get-versions.outputs.node}}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Test
+        run: npm run test
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
