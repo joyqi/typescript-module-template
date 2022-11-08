@@ -1,14 +1,16 @@
 {
   "name": "typescript-module-template",
   "keywords": [],
-  "author": "joyqi",
+  "author": "",
   "license": "",
   "description": "",
   "repository": {
     "type": "git",
-    "url": "https+git://github.com/joyqi/typescript-module-template.git"
+    "url": ""
   },
+
   "version": "0.0.1",
+
   "main": "lib/index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
