@@ -1,14 +1,10 @@
-name: Build and Deploy
+name: Setup Project
 
-on:
-  push:
-  release:
-    types: [published]
+on: push
 
 jobs:
   setup:
     runs-on: ubuntu-latest
-    if: github.run_attempt == 1
     steps:
       - uses: actions/checkout@v3
 
@@ -21,46 +17,8 @@ jobs:
           mv $tmp package.json
           echo "# ${{ github.event.repository.name }}" > README.md
           rm -rf LICENSE
-      
+          mv github-ci.yml .github/workflows/ci.yml
+
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Setup project"
-
-  ci:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      # extract `engines.node` from package.json and save it to output
-      - name: Get Node.JS version from package.json
-        id: get-versions
-        run: echo ::set-output name=node::$(jq -r '.engines.node // "lts/*"' ./package.json)
-
-      - name: Setup Node.JS
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{steps.get-versions.outputs.node}}
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Test
-        run: npm run test
-
-      - name: Build
-        id: build
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        if: github.event_name == 'release' && env.NPM_TOKEN != null
-        run: |
-          npm run build
-          tmp=$(mktemp)
-          jq --arg version "${{ github.event.release.tag_name }}" '.version = $version' package.json > $tmp
-          mv $tmp package.json
-          echo ::set-output name=version::$(jq -r '.version' package.json)
-      
-      - name: Publish
-        uses: JS-DevTools/npm-publish@v1
-        if: steps.build.outputs.version != null
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
