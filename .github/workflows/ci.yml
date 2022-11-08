@@ -1,9 +1,31 @@
+name: Build and Deploy
+
 on:
   push:
   release:
     types: [published]
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    if: github.run_attempt == 1
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Initialize
+        run: |
+          tmp=$(mktemp)
+          jq --arg author "${{ github.repository_owner }}" '.author = $author' package.json > $tmp
+          jq --arg url "${{ github.repositoryUrl }}" '.repository.url = "https+" + $url' $tmp > package.json
+          jq --arg name "${{ github.event.repository.name }}" '.name = $name' package.json > $tmp
+          mv $tmp package.json
+          echo "# ${{ github.event.repository.name }}" > README.md
+          rm -rf LICENSE
+      
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Setup project"
+
   ci:
     runs-on: ubuntu-latest
     steps:

@@ -11,20 +11,13 @@ Just click the "Use this template" button and create a new repository.
 1. Change these lines in `package.json`:
     ```json
     {
-    "name": "your-module-name <",
     "keywords": ["your", "keywords", "<"],
-    "author": "Your Name <",
     "description": "Your module description here <",
     "license": "Your license here <",
-    "repository": {
-        "type": "git",
-        "url": "your repository url here <"
-        },
-    }
     ```
     You can specify a node version in the `engines` field. We'll use this version to set up the CI environment.
 2. Change the `README.md` file to your needs.
-3. Change the `LICENSE` file to your needs.
+3. Add LICENSE file if you want to.
 
 ## Project Structure
 
