@@ -26,7 +26,6 @@ jobs:
         run: npm run test
 
       - name: Build
-        id: build
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: github.event_name == 'release' && env.NPM_TOKEN != null
@@ -37,7 +36,6 @@ jobs:
           mv $tmp package.json
       
       - name: Publish
-        needs: build
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
