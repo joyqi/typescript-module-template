@@ -6,28 +6,8 @@ on:
     types: [published]
 
 jobs:
-  setup:
-    if: github.run_number == 1
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Initialize
-        run: |
-          tmp=$(mktemp)
-          jq --arg author "${{ github.repository_owner }}" '.author = $author' package.json > $tmp
-          jq --arg url "${{ github.repositoryUrl }}" '.repository.url = "https+" + $url' $tmp > package.json
-          jq --arg name "${{ github.event.repository.name }}" '.name = $name' package.json > $tmp
-          mv $tmp package.json
-          echo "# ${{ github.event.repository.name }}" > README.md
-          rm -rf LICENSE
-
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Setup project"
-
   ci:
-    if: github.run_number != 1
+    if: github.run_number != 1 && github.ref_type != 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -35,7 +15,7 @@ jobs:
       # extract `engines.node` from package.json and save it to output
       - name: Get Node.JS version from package.json
         id: get-versions
-        run: echo ::set-output name=node::$(jq -r '.engines.node // "lts/*"' ./package.json)
+        run: echo node=$(jq -r '.engines.node // "lts/*"' ./package.json) >> $GITHUB_OUTPUT
 
       - name: Setup Node.JS
         uses: actions/setup-node@v3
@@ -58,7 +38,7 @@ jobs:
           tmp=$(mktemp)
           jq --arg version "${{ github.event.release.tag_name }}" '.version = $version' package.json > $tmp
           mv $tmp package.json
-          echo ::set-output name=version::$(jq -r '.version' package.json)
+          echo version=$(jq -r '.version' package.json) >> $GITHUB_OUTPUT
       
       - name: Publish
         uses: JS-DevTools/npm-publish@v1
