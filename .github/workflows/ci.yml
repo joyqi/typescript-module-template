@@ -1,16 +1,10 @@
 on:
   push:
-    branches:
-      - master
-      - main
-      - develop
-      - dev
   release:
-    types:
-      - created
+    types: [published]
 
 jobs:
-  publish:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -31,6 +25,19 @@ jobs:
       - name: Test
         run: npm run test
 
-      - run: npm publish
+      - name: Build
+        id: build
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: github.event_name == 'release' && env.NPM_TOKEN != null
+        run: |
+          npm run build
+          tmp=$(mktemp)
+          jq --arg version "${{ github.event.release.tag_name }}" '.version = $version' package.json > $tmp
+          mv $tmp package.json
+      
+      - name: Publish
+        needs: build
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}

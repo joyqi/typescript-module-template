@@ -1,0 +1,2 @@
+extension: ['ts', 'tsx'] # add tsx if you use react
+spec: 'src/**/*.spec.ts'
