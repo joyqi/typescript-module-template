@@ -1,6 +1,7 @@
 name: Build and Deploy
 
 on:
+  create:
   push:
     branches:
       - master
@@ -22,7 +23,7 @@ on:
 
 jobs:
   setup:
-    if: github.run_number == 1
+    if: github.run_number == 1 && github.event_name == 'create'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -42,7 +43,7 @@ jobs:
           commit_message: "Setup project for ${{ github.event.repository.name }} [skip ci]"
 
   ci:
-    if: github.run_number != 1 && !contains(github.event.head_commit.message, '[skip ci]')
+    if: github.run_number != 1 && github.event_name != 'create' && !contains(github.event.head_commit.message, '[skip ci]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
