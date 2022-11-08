@@ -22,6 +22,7 @@
     "@types/mocha": "latest",
     "assert": "latest",
     "mocha": "latest",
+    "ts-node": "latest",
     "typescript": "latest"
   }
 }
