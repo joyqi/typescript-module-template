@@ -24,7 +24,7 @@ Just click the "Use this template" button and create a new repository.
 
 You can specify a node version in this field. We'll use this version to set up the CI environment.
 
-### `npn` / `yarn` / `pnpm`
+### `npm` / `yarn` / `pnpm`
 
 You can specify a package manager in this field. We'll use this package manager to install dependencies.
 
