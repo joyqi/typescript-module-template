@@ -15,9 +15,18 @@ Just click the "Use this template" button and create a new repository.
     "description": "Your module description here <",
     "license": "Your license here <",
     ```
-    You can specify a node version in the `engines` field. We'll use this version to set up the CI environment.
 2. Change the `README.md` file to your needs.
 3. Add LICENSE file if you want to.
+
+## `engines` field in `package.json`
+
+### `node`
+
+You can specify a node version in this field. We'll use this version to set up the CI environment.
+
+### `npn` / `yarn` / `pnpm`
+
+You can specify a package manager in this field. We'll use this package manager to install dependencies.
 
 ## Project Structure
 

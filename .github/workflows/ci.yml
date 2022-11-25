@@ -53,18 +53,26 @@ jobs:
       # extract `engines.node` from package.json and save it to output
       - name: Get Node.JS version from package.json
         id: get-versions
-        run: echo node=$(jq -r '.engines.node // "lts/*"' ./package.json) >> $GITHUB_OUTPUT
+        run: |
+          echo node=$(jq -r '.engines.node // "lts/*"' ./package.json) >> $GITHUB_OUTPUT
+          echo pkg=$(jq -r '(.engines | select(.pnpm != null) | "pnpm") // (.engines | select(.yarn != null) | "yarn") // "npm"' ./package.json) >> $GITHUB_OUTPUT
 
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
           node-version: ${{steps.get-versions.outputs.node}}
 
+      - name: Setup pnpm
+        if: steps.get-versions.outputs.pkg == 'pnpm'
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
       - name: Install dependencies
-        run: npm install
+        run: ${{steps.get-versions.outputs.pkg}} install
 
       - name: Test
-        run: npm run test
+        run: ${{steps.get-versions.outputs.pkg}} run test
 
       - name: Build
         id: build
@@ -72,7 +80,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: github.event_name == 'release' && env.NPM_TOKEN != null
         run: |
-          npm run build
+          ${{steps.get-versions.outputs.pkg}} run build
           tmp=$(mktemp)
           jq --arg version "${{ github.event.release.tag_name }}" '.version = $version' package.json > $tmp
           mv $tmp package.json
