@@ -28,6 +28,11 @@ You can specify a node version in this field. We'll use this version to set up t
 
 You can specify a package manager in this field. We'll use this package manager to install dependencies.
 
+### The compatibility of `esm` & `cjs`
+
+There's no need to do some additional work to make the module compatible with `esm` and `cjs` environments.
+Your module will work in both environments without any additional configuration.
+
 ## Project Structure
 
 Just like a normal TypeScript project, but with a `src` folder.
