@@ -25,6 +25,8 @@ jobs:
   setup:
     if: github.run_number == 1 && github.event_name == 'create'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
 
