@@ -36,6 +36,7 @@
     "test": "npx mocha"
   },
   "devDependencies": {
+    "@types/node": "latest",
     "@types/mocha": "latest",
     "assert": "latest",
     "mocha": "latest",
