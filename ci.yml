@@ -11,6 +11,7 @@ on:
       - feat/*
       - release/*
       - hotfix/*
+      - fix/*
     paths:
       - '**.js'
       - '**.jsx'

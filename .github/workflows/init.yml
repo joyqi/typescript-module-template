@@ -1,7 +1,7 @@
 name: Initialize
 
 on:
-  create:
+  push:
 
 jobs:
   init:
@@ -9,7 +9,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Initialize
         run: |
@@ -23,7 +23,8 @@ jobs:
           echo "# ${{ github.event.repository.name }}" > README.md
           rm -rf LICENSE
           rm -rf .github/workflows/init.yml
+          mv ci.yml .github/workflows/ci.yml
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Initialize project ${{ github.event.repository.name }} [skip ci]"
