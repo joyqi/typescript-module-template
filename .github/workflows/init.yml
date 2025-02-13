@@ -1,11 +1,11 @@
 name: Initialize
 
 on:
-  repository_dispatch:
-    types: [create]
+  push:
 
 jobs:
   init:
+    if: github.event.before == '0000000000000000000000000000000000000000'
     runs-on: ubuntu-latest
     permissions:
       contents: write
