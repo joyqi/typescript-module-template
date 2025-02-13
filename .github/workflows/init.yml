@@ -1,0 +1,29 @@
+name: Initialize
+
+on:
+  create:
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Initialize
+        run: |
+          tmp=$(mktemp)
+          jq --arg author "${{ github.repository_owner }}" '.author = $author' package.json > $tmp
+          jq --arg url "git+${{ github.event.repository.clone_url }}" '.repository.url = $url' $tmp > package.json
+          jq --arg name "${{ github.event.repository.name }}" '.name = $name' package.json > $tmp
+          jq --arg description "${{ github.event.description }}" '.description = $description' $tmp > package.json
+          jq --arg homepage "${{ github.event.repository.html_url }}#readme" '.homepage = $homepage' package.json > $tmp
+          jq --arg bugs "${{ github.event.repository.html_url }}/issues" '.bugs.url = $bugs' $tmp > package.json
+          echo "# ${{ github.event.repository.name }}" > README.md
+          rm -rf LICENSE
+          rm -rf .github/workflows/init.yml
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Initialize project ${{ github.event.repository.name }} [skip ci]"

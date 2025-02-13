@@ -1,7 +1,6 @@
 name: Build and Deploy
 
 on:
-  create:
   push:
     branches:
       - master
@@ -22,35 +21,11 @@ on:
     types: [published]
 
 jobs:
-  setup:
-    if: github.run_number == 1 && github.event_name == 'create'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Initialize
-        run: |
-          tmp=$(mktemp)
-          jq --arg author "${{ github.repository_owner }}" '.author = $author' package.json > $tmp
-          jq --arg url "git+${{ github.event.repository.clone_url }}" '.repository.url = $url' $tmp > package.json
-          jq --arg name "${{ github.event.repository.name }}" '.name = $name' package.json > $tmp
-          jq --arg description "${{ github.event.description }}" '.description = $description' $tmp > package.json
-          jq --arg homepage "${{ github.event.repository.html_url }}#readme" '.homepage = $homepage' package.json > $tmp
-          jq --arg bugs "${{ github.event.repository.html_url }}/issues" '.bugs.url = $bugs' $tmp > package.json
-          echo "# ${{ github.event.repository.name }}" > README.md
-          rm -rf LICENSE
-
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Setup project for ${{ github.event.repository.name }} [skip ci]"
-
   ci:
-    if: github.run_number != 1 && github.event_name != 'create' && !contains(github.event.head_commit.message, '[skip ci]')
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # extract `engines.node` from package.json and save it to output
       - name: Get Node.JS version from package.json
@@ -66,13 +41,13 @@ jobs:
           fi
 
       - name: Setup Node.JS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{steps.get-versions.outputs.node}}
 
       - name: Setup pnpm
         if: steps.get-versions.outputs.pkg == 'pnpm'
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: latest
 
@@ -95,7 +70,7 @@ jobs:
           echo version=$(jq -r '.version' package.json) >> $GITHUB_OUTPUT
       
       - name: Publish
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v3
         if: steps.build.outputs.version != null
         with:
           token: ${{ secrets.NPM_TOKEN }}
